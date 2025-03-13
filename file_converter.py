@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
-import plotly.express as px
-import plotly.graph_objects as go
 from datetime import datetime
 
 # Page configuration
@@ -80,7 +78,7 @@ if files:
                 df = pd.read_csv(file) if ext == "csv" else pd.read_excel(file)
 
             # Data preview with tabs
-            tab1, tab2, tab3 = st.tabs(["Preview", "Data Info", "Visualization"])
+            tab1, tab2 = st.tabs(["Preview", "Data Info"])
             
             with tab1:
                 st.dataframe(df.head(), use_container_width=True)
@@ -94,30 +92,6 @@ if files:
                     st.markdown("#### Missing Values")
                     missing_values = df.isnull().sum()
                     st.write(missing_values[missing_values > 0])
-            
-            with tab3:
-                if not df.select_dtypes(include="number").empty:
-                    numeric_cols = df.select_dtypes(include="number").columns
-                    if len(numeric_cols) >= 2:
-                        chart_type = st.selectbox(
-                            "Select Chart Type",
-                            ["Bar Chart", "Line Chart", "Scatter Plot"],
-                            key=f"chart_{file.name}"
-                        )
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            x_col = st.selectbox("Select X-axis", numeric_cols, key=f"x_{file.name}")
-                        with col2:
-                            y_col = st.selectbox("Select Y-axis", numeric_cols, key=f"y_{file.name}")
-                        
-                        if chart_type == "Bar Chart":
-                            fig = px.bar(df, x=x_col, y=y_col)
-                        elif chart_type == "Line Chart":
-                            fig = px.line(df, x=x_col, y=y_col)
-                        else:
-                            fig = px.scatter(df, x=x_col, y=y_col)
-                        
-                        st.plotly_chart(fig, use_container_width=True)
 
             # Data cleaning options
             st.markdown("### 🧹 Data Cleaning Options")
